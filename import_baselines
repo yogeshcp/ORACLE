@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Spec;
+use File::Basename;
+
+##############################################################################
+##  get directory structure and include libraries
+$::gCmd     = File::Spec->rel2abs($0);
+$::gCmdDir  = dirname($::gCmd);
+$::gCmdName = basename($::gCmd);
+($::gCmdName, undef) = split(/\./, $::gCmdName);
+$::gIncludeDir = File::Spec->catfile($::gCmdDir,'include');
+
+# BC7708 V4.1 20-Dec-2006
+# added block to use lib common library files first
+if ( $^O =~ m/^vms$/i) {
+  $::gLibCommon = File::Spec->catdir($ENV{'ATG_COMMON'},'libperl');
+  $::gSQLCommon = File::Spec->catdir($ENV{'ATG_COMMON'},'libsql');
+} elsif ( $^O =~ m/^(aix|hpux|linux)$/i ) {
+$::gLibCommon = File::Spec->catdir($::gCmdDir,'common','libperl');
+$::gSQLCommon = File::Spec->catdir($::gCmdDir,'common','libsql');
+} else {
+  # Call raiseErr -> dies with debugging info
+  raiseErr(" \"RMAN not supported on $^O\" at ".__FILE__." line ".__LINE__."\n");
+}
+opendir(I,"$::gLibCommon") || die "Cannot add atg core libraries $::gLibCommon: $!\n";
+my(@include) = readdir(I);
+close(I);
+for (@include){
+require File::Spec->catfile($::gLibCommon,$_) if (m/\.ph$/);
+}
+
+if (! defined $ENV{'ORACLE_SID'}){
+  print "Error ORACLE_SID must be set.";
+}
+if (! defined $ENV{'ORACLE_HOME'}){
+  print "Error ORACLE_HOME must be set.";
+}
+
+system("find $::gCmdDir/query | grep dmp");
+my($dumploc) = getInput("Please enter dumpfile to import: ",'','-r');
+my(@file) = split /\//,$dumploc;
+my($dumpfile) = $file[scalar(@file)-1];
+my($tableOwner,$tableName,$undef) = split /\./,$dumpfile;
+my($sourceDB,undef) = split /_/,$tableName;
+#print "\$sourceDB is:$sourceDB\n";
+
+# check connection info
+$::gForm{'CONNECT_STRING'} = '/ as sysdba';
+my(%tgtInstance) = getInstanceHash();
+if ($tgtInstance{'SUCCESS'} != 1){
+  print "\nError connecting to target using $::gForm{'CONNECT_STRING'}\n";
+  exit;
+}
+my(%tgtDatabase) = getDatabaseHash();
+
+if ($tgtDatabase{'NAME'} =~ m/^$sourceDB$/){
+  print "$sourceDB = $tgtDatabase{'NAME'}\n";
+  print "Error this script must be run on target node.\n";
+  print "Note the dumpfile must also reside on the target node.\n";
+  exit;
+}
+
+
+$::gForm{'SOURCEDB'} = $sourceDB;
+$::gForm{'TKUSER'} = ${tableOwner};
+$::gForm{'STAGE_TABLE'} = ${tableName};
+
+# import data
+print "Importing Data...\n";
+my($cmd) = '$ORACLE_HOME/bin/impdp \"/ as sysdba\" ' .
+           'TABLE_EXISTS_ACTION=TRUNCATE ' .
+#           'CONTENT=DATA_ONLY ' .
+           "DIRECTORY=DM_PERF_DIR tables=${tableOwner}.${tableName} " .
+           "dumpfile=$dumpfile logfile=${tableOwner}.${tableName}_IMPDP.log";
+#print "$cmd\n";
+system("$cmd");
+
+print "Loading baselines from stage table...\n";
+print runSQL("$::gCmdDir/sql/unpack_baselines.sql");
+

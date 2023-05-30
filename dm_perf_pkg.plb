@@ -1,0 +1,32 @@
+CREATE OR REPLACE PACKAGE cern_dbstats.dm_perf wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+9
+5df 299
+edzWlDPYFWEjna0iv0L3fPI7kiAwg2PDDCBoyi+5rZ3gSB6NaE3NMq4E1PaOdJGpeTNG0zsK
+YPLr5fpjtbxLu873G/yV3c/PTo8TLQHkGGLz3yQGZLn+xJmL0aZWiEpmL6yELNWLaaHwaamY
+Kwmpd0vg2/1gD/JL18X99RHVGtOjxHrGNXDXrJt8Es5CmCnfuP7BL/ybJhJKv8SuVWpzC3gT
+lofblJGKQo9q3yc8BkKpHCgqCo5BgjuSW+la/kjcO6z2ZihddPAADLuSlFEQ+M0Omr9PEzxl
+FVqNN+Cia5EY/zYGBRjCCBqeT43KRCckxezL8o2peIXWxjCkyDzvl/y8MI13ZmXtb0cDibXi
+yIzAB9wxGQnY5jJa9iAFJTPSQcEBJ8ZMq7YCxWrGbRTYA2HGzoDShsHTdRG2fNsiLgLQGzD9
+z/eno+U7BY9cR/jZ5PQ/eS1GNgoQd73NFn20Wv4nXOwxlF4gWpYo9u+3pwKovl+ED4iif+Hd
+HDqdOPk/tc5ou0TBVVLCGPUEFjP8tZG8qfnYg+OiQBiHSGprYVICXRqziCbWiyLNa2UJ6eAP
+jHizhvCWkSJD/i7Zeg30KPWbe6Eu7fSGd19ZJZ9c8La/tBaBRKiyip+iwG2QlyzJSqNWIuRE
+DtDI3Q==
+
+/
